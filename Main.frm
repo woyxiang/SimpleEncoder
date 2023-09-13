@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form Main 
+Begin VB.Form Mainform 
    Caption         =   "SimpleFFmpeg"
    ClientHeight    =   4836
    ClientLeft      =   108
@@ -10,7 +10,7 @@ Begin VB.Form Main
    ScaleWidth      =   6876
    StartUpPosition =   2  'ÆÁÄ»ÖÐÐÄ
 End
-Attribute VB_Name = "Main"
+Attribute VB_Name = "Mainform"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
