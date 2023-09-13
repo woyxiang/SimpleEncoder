@@ -13,5 +13,5 @@ ffmpeg的Github项目地址是:[github.com/FFmpeg/FFmpeg](github.com/FFmpeg/FFmp
 
 [参考视频](https://www.bilibili.com/video/BV1AT411J7cH/?spm_id_from=333.337.search-card.all.click)
 
-# 我们的软件
+# SimpleEncoder
 SimpleEncoder就是一个视频编码转码的软件，确切地说，它是一个FFmpeg gui(图形用户界面)，它来代替我们代码的操作，用户使用图形界面，软件自动生成FFmpeg运行参数
