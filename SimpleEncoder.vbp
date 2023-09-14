@@ -1,11 +1,10 @@
 Type=Exe
-Form=Main.frm
 Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\Windows\SysWOW64\stdole2.tlb#OLE Automation
-Form=reference1.frm
-Form=reference2.frm
-Form=test.frm
-Module=Module1; Module1.bas
-IconForm="Mainform"
+Form=form\Main.frm
+Form=form\reference1.frm
+Form=form\reference2.frm
+Form=form\test.frm
+Module=Module1; mod\Module1.bas
 Startup="Sub Main"
 HelpFile=""
 Title="SimpleEncoder"
