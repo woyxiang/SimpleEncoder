@@ -1,4 +1,4 @@
-# 软件名SimpleEncoder(暂定)
+# 软件名SimpleEncoder
 # 视频编码介绍
 [参考视频](https://www.bilibili.com/video/BV19Y4113788)
 # 编码转码工具FFmpeg
