@@ -1,4 +1,6 @@
 Attribute VB_Name = "ForMod1"
+Public ffmpegPath$
+
 Private Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As Any, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Long, ByVal lpFileName As String) As Long
 Private Declare Function WritePrivateProfileString Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As Any, ByVal lpString As Any, ByVal lpFileName As String) As Long
 
@@ -27,7 +29,7 @@ End Function
 Sub Main()
 '    Mainform.Show
 End Sub
-Public Sub FFmpegExist()
+Private Sub FFmpegExist()
 
     Dim PathVar As String
     Dim PathArray() As String
@@ -51,12 +53,21 @@ Public Sub FFmpegExist()
     
     If ffmpegPath <> "" Then
         'MsgBox "ffmpeg.exe位于以下目录：" & ffmpegPath
+        FFmpegExist = 1
     Else
-        MsgBox "ffmpeg.exe没有找到": End
+        'MsgBox "ffmpeg.exe没有找到": End
+        FFmpegExist = 0
     End If
 
 End Sub
 Private Sub FirstStart()
-    
+    Call FFmpegExist
+    If ffmpegPath = "" Then Call SetFFmpeg
+    If Dir(App.Path & "\Config\Config.ini") = "" Then Call SettingGuide
 End Sub
+Private Sub SetFFmpeg()
 
+End Sub
+Private Sub SettingGuide()
+
+End Sub
