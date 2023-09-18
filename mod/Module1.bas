@@ -1,6 +1,6 @@
 Attribute VB_Name = "ForMod1"
-Public ffmpegPath$
-
+Public FFmpegPath$
+Dim FFmpegExist As Integer
 Private Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As Any, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Long, ByVal lpFileName As String) As Long
 Private Declare Function WritePrivateProfileString Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As Any, ByVal lpString As Any, ByVal lpFileName As String) As Long
 
@@ -29,12 +29,12 @@ End Function
 Sub Main()
 '    Mainform.Show
 End Sub
-Private Sub FFmpegExist()
+Public Function FFmpegPath$()
 
     Dim PathVar As String
     Dim PathArray() As String
     Dim i As Integer
-    Dim ffmpegPath As String
+    Dim FFmpegPath As String
     
     ' 获取环境变量PATH
     PathVar = Environ("PATH")
@@ -46,23 +46,32 @@ Private Sub FFmpegExist()
     For i = 0 To UBound(PathArray)
         ' 使用Dir函数检查是否存在名为"ffmpeg.exe"的文件
         If Dir(PathArray(i) & "\ffmpeg.exe") <> "" Then
-            ffmpegPath = PathArray(i)
+            FFmpegPath = PathArray(i)
             Exit For
         End If
     Next i
+    FFmpegPath = FFmpegPath
     
-    If ffmpegPath <> "" Then
-        'MsgBox "ffmpeg.exe位于以下目录：" & ffmpegPath
-        FFmpegExist = 1
-    Else
-        'MsgBox "ffmpeg.exe没有找到": End
-        FFmpegExist = 0
-    End If
+'    If FFmpegPath <> "" Then
+'        'MsgBox "ffmpeg.exe位于以下目录：" & ffmpegPath
+'        FFmpegExist = 1
+'    Else
+'        'MsgBox "ffmpeg.exe没有找到": End
+'        FFmpegExist = 0
+'    End If
 
-End Sub
+End Function
+Public Function FFmpegExist() As Boolean
+    Call subFFmpegExist
+    If FFmpegPath <> "" Then
+        FFmpegExist = True
+    Else
+        FFmpegExist = False
+    End If
+End Function
 Private Sub FirstStart()
     Call FFmpegExist
-    If ffmpegPath = "" Then Call SetFFmpeg
+    If FFmpegPath = "" Then Call SetFFmpeg
     If Dir(App.Path & "\Config\Config.ini") = "" Then Call SettingGuide
 End Sub
 Private Sub SetFFmpeg()
