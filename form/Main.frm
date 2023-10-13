@@ -2,21 +2,22 @@ VERSION 5.00
 Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "COMDLG32.OCX"
 Begin VB.Form Mainform 
    Caption         =   "SimpleEncoder"
-   ClientHeight    =   4836
+   ClientHeight    =   6012
    ClientLeft      =   108
    ClientTop       =   456
-   ClientWidth     =   6876
+   ClientWidth     =   6804
    Icon            =   "Main.frx":0000
    LinkTopic       =   "Form1"
-   ScaleHeight     =   4836
-   ScaleWidth      =   6876
+   MaxButton       =   0   'False
+   ScaleHeight     =   6012
+   ScaleWidth      =   6804
    StartUpPosition =   2  '屏幕中心
    Begin VB.CommandButton Command2 
       Caption         =   "..."
       Height          =   372
       Left            =   5160
       TabIndex        =   3
-      Top             =   1440
+      Top             =   720
       Width           =   612
    End
    Begin VB.CommandButton Command1 
@@ -24,21 +25,21 @@ Begin VB.Form Mainform
       Height          =   372
       Left            =   5160
       TabIndex        =   2
-      Top             =   600
+      Top             =   120
       Width           =   612
    End
    Begin VB.TextBox Text2 
       Height          =   372
       Left            =   840
       TabIndex        =   1
-      Top             =   1440
+      Top             =   720
       Width           =   4212
    End
    Begin VB.TextBox Text1 
       Height          =   372
       Left            =   840
       TabIndex        =   0
-      Top             =   600
+      Top             =   120
       Width           =   4212
    End
    Begin MSComDlg.CommonDialog CommonDialog1 
@@ -53,7 +54,7 @@ Begin VB.Form Mainform
       Height          =   372
       Left            =   120
       TabIndex        =   5
-      Top             =   1440
+      Top             =   720
       Width           =   612
    End
    Begin VB.Label Label1 
@@ -61,7 +62,7 @@ Begin VB.Form Mainform
       Height          =   372
       Left            =   120
       TabIndex        =   4
-      Top             =   600
+      Top             =   120
       Width           =   612
    End
 End
@@ -82,5 +83,11 @@ Private Sub Command2_Click()
 '保存输出文件
 CommonDialog1.ShowSave
 Text2.Text = CommonDialog1.FileName
+End Sub
+
+Private Sub Form_Load()
+    Label1.Caption = GetTranslation("MainScreen", "Source")
+    Label2.Caption = GetTranslation("MainScreen", "Target")
+    'MsgBox
 End Sub
 

@@ -1,6 +1,7 @@
 Attribute VB_Name = "ForMod1"
-Public FFmpegPath$
-Dim FFmpegExist As Integer
+'Public FFmpegPath$
+'Dim FFmpegExist As Integer
+Public SelectLanguage$
 Private Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As Any, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Long, ByVal lpFileName As String) As Long
 Private Declare Function WritePrivateProfileString Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As Any, ByVal lpString As Any, ByVal lpFileName As String) As Long
 
@@ -23,11 +24,13 @@ End Function
 '¶ÁÈ¡·­ÒëÎÄ¼þ
 
 Public Function GetTranslation(strSection As String, strKey As String)
-    GetTranslation = GetIniKey(strSection, strKey, App.Path & "\Config\Language.ini")
+    
+    GetTranslation = GetIniKey(strSection, strKey, App.Path & "\Language\" & SelectLanguage & ".ini")
 End Function
 
 Sub Main()
-'    Mainform.Show
+    SelectLanguage = GetIniKey("MainScreen", "language", App.Path & "\Config\config.ini")
+    Mainform.Show
 End Sub
 Public Function FFmpegPath$()
 
