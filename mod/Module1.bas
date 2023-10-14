@@ -29,7 +29,10 @@ Public Function GetTranslation(strSection As String, strKey As String)
 End Function
 
 Sub Main()
+    If GetIniKey("Fore", "firststart", App.Path & "\Config\config.ini") Then SettingGuide
+'    MsgBox GetIniKey("Fore", "firststart", App.Path & "\Config\config.ini")
     SelectLanguage = GetIniKey("MainScreen", "language", App.Path & "\Config\config.ini")
+'    k = CBool(GetIniKey("Fore", "firststart", App.Path & "\Config\config.ini"))
     Mainform.Show
 End Sub
 Public Function FFmpegPath$()
@@ -37,7 +40,7 @@ Public Function FFmpegPath$()
     Dim PathVar As String
     Dim PathArray() As String
     Dim i As Integer
-'    Dim FFmpegPath As String
+    Dim Path As String
     
     ' 获取环境变量PATH
     PathVar = Environ("PATH")
@@ -49,11 +52,11 @@ Public Function FFmpegPath$()
     For i = 0 To UBound(PathArray)
         ' 使用Dir函数检查是否存在名为"ffmpeg.exe"的文件
         If Dir(PathArray(i) & "\ffmpeg.exe") <> "" Then
-            FFmpegPath = PathArray(i)
+            Path = PathArray(i)
             Exit For
         End If
     Next i
-    FFmpegPath = FFmpegPath
+    Path = FFmpegPath
     
 '    If FFmpegPath <> "" Then
 '        'MsgBox "ffmpeg.exe位于以下目录：" & ffmpegPath
@@ -81,5 +84,6 @@ Private Sub SetFFmpeg()
 
 End Sub
 Private Sub SettingGuide()
+'    MsgBox "test"
 
 End Sub
