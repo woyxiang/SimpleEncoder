@@ -37,7 +37,7 @@ Public Function FFmpegPath$()
     Dim PathVar As String
     Dim PathArray() As String
     Dim i As Integer
-    Dim FFmpegPath As String
+'    Dim FFmpegPath As String
     
     ' 获取环境变量PATH
     PathVar = Environ("PATH")
@@ -65,7 +65,7 @@ Public Function FFmpegPath$()
 
 End Function
 Public Function FFmpegExist() As Boolean
-    Call subFFmpegExist
+    Call FFmpegExist
     If FFmpegPath <> "" Then
         FFmpegExist = True
     Else
