@@ -117,7 +117,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
-Dim ConfirmTip$
+Dim ConfirmTip$, shouldCancel As Boolean
 Private Sub Translate()
     ConfirmTip = GetTranslation("BasicOptions", "confirmTip")
     Check1.Caption = GetTranslation("BasicOptions", "envpath")
@@ -135,12 +135,20 @@ Private Sub Check1_Click()
 End Sub
 
 Private Sub CMDApply_Click()
-    If Check2.Value = 1 Then
+
+    If Check3.Value = 1 Then
         If Check1.Value = 1 Then
             CheckApply
         ElseIf Not IsFFmpegPath(Text1.Text) Then
             MsgBox GetTranslation("BasicOptions", "queryPath"), vbQuestion
+            shouldCancel = False
+        Else
+            shouldCancel = True
+            Unload BasicOptions
         End If
+    Else
+        shouldCancel = True
+        Unload BasicOptions
     End If
 End Sub
 Private Function IsFFmpegPath(addr As String) As Boolean
@@ -158,6 +166,7 @@ End Function
 
 Private Sub CheckApply()
     If FFmpegExist Then
+        shouldCancel = True
         Unload BasicOptions
     Else
         MsgBox GetTranslation("BasicOptions", "wrongPathVar"), vbCritical, GetTranslation("Title", "Err")
@@ -166,6 +175,7 @@ Private Sub CheckApply()
 End Sub
 
 Private Sub CMDCancel_Click()
+    shouldCancel = True
     Unload BasicOptions
 End Sub
 
@@ -185,9 +195,18 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     If UnloadMode = 0 Then
         If MsgBox(GetTranslation("BasicOptions", "querySave"), vbYesNo + vbQuestion) = vbYes Then
-            CMDApply_Click
+           CMDApply_Click
+            
         Else
             CMDCancel_Click
+            
         End If
+        
     End If
+    If shouldCancel Then
+        Cancel = 0
+    Else
+        Cancel = 1
+    End If
+    
 End Sub
