@@ -29,7 +29,7 @@ Public Function GetTranslation(strSection As String, strKey As String)
 End Function
 
 Sub Main()
-    If GetIniKey("Fore", "firststart", App.Path & "\Config\config.ini") Then SettingGuide
+
 '    MsgBox GetIniKey("Fore", "firststart", App.Path & "\Config\config.ini")
     SelectLanguage = GetIniKey("MainScreen", "language", App.Path & "\Config\config.ini")
 '    k = CBool(GetIniKey("Fore", "firststart", App.Path & "\Config\config.ini"))

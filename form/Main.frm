@@ -22,10 +22,10 @@ Begin VB.Form Mainform
    ScaleWidth      =   12876
    StartUpPosition =   2  '屏幕中心
    Begin VB.CommandButton run 
-      Caption         =   "Command3"
+      Caption         =   "run"
       Height          =   372
       Left            =   11880
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   5520
       Width           =   852
    End
@@ -44,11 +44,11 @@ Begin VB.Form Mainform
       TabIndex        =   6
       Top             =   1080
       Width           =   4212
-      Begin VB.TextBox Text4 
-         Height          =   264
+      Begin VB.ComboBox Combo1 
+         Height          =   276
          Left            =   1800
-         TabIndex        =   12
-         Text            =   "Text4"
+         TabIndex        =   15
+         Text            =   "Combo1"
          Top             =   840
          Width           =   1572
       End
@@ -60,14 +60,14 @@ Begin VB.Form Mainform
          Top             =   360
          Width           =   1572
       End
-      Begin VB.Label EncoderOptions 
-         Caption         =   "Options"
-         ForeColor       =   &H8000000D&
-         Height          =   252
+      Begin VB.TextBox TextCMD 
+         Height          =   372
          Left            =   240
          TabIndex        =   14
-         Top             =   1800
-         Width           =   972
+         Text            =   "CommandLine"
+         Top             =   1200
+         Visible         =   0   'False
+         Width           =   3132
       End
       Begin VB.Label Preset 
          Caption         =   "Preset"
@@ -75,6 +75,15 @@ Begin VB.Form Mainform
          Left            =   240
          TabIndex        =   11
          Top             =   840
+         Width           =   732
+      End
+      Begin VB.Label EncoderOptions 
+         Caption         =   "Options"
+         ForeColor       =   &H8000000D&
+         Height          =   252
+         Left            =   240
+         TabIndex        =   13
+         Top             =   1800
          Width           =   732
       End
       Begin VB.Label Quality 
@@ -97,7 +106,7 @@ Begin VB.Form Mainform
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H8000000D&
-         Height          =   372
+         Height          =   252
          Left            =   3360
          TabIndex        =   8
          Top             =   0
@@ -116,7 +125,7 @@ Begin VB.Form Mainform
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H8000000D&
-         Height          =   372
+         Height          =   252
          Left            =   240
          TabIndex        =   7
          Top             =   0
@@ -346,6 +355,9 @@ Begin VB.Form Mainform
             Caption         =   "English(US)"
          End
       End
+      Begin VB.Menu MenuFFmpegPath 
+         Caption         =   "FFmpegPath"
+      End
    End
    Begin VB.Menu MenuAbout 
       Caption         =   "About(&A)"
@@ -358,6 +370,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 Dim SelectEncoder$, SelectFormat$, BitrateControlMode$
+
 Private Sub Command1_Click()
 
 '选择输入文件
@@ -373,12 +386,46 @@ Private Sub Command2_Click()
     Text2.Text = CommonDialog1.FileName
 End Sub
 
+
+
 Private Sub EncoderOptions_Click()
     Select Case SelectEncoder
     
     Case "libx265"
-        'Load x265Options
-        x265Options.Show
+
+    Case "libx264"
+    
+    Case "libsvtav1"
+    
+    Case "librav1e"
+    
+    Case "libaom_av1"
+    
+    Case "hevc_nvenc"
+    
+    Case "h264_nvenc"
+    
+    Case "av1_nvenc"
+    
+    Case "hevc_amf"
+    
+    Case "h264_amf"
+    
+    Case "av1_amf"
+    
+    Case "hevc_qsv"
+    
+    Case "h264_qsv"
+    
+    Case "av1_qsv"
+    
+    Case "mjpeg_qsv"
+    
+    Case "mpeg2_qsv"
+    
+    Case "vp9_qsv"
+    
+    Case "Copy"
     
     
     End Select
@@ -392,16 +439,38 @@ Private Sub Form_Load()
     SelectFormat = MenuMP4.Caption
     Label3.Caption = "x265"
     Label4.Caption = SelectFormat
+    Text3.Text = ""
 '    MsgBox Menu_libx264.Caption
 '    MsgBox Menu_libx265.Caption
+    
 End Sub
 
 Private Sub Label3_Change()
-  'Quality.Caption = BitrateControlMode
+
+    If Label3.Caption = "Command" Then
+        TextCMD.Visible = True
+        Quality.Visible = False
+        Preset.Visible = False
+        Text3.Visible = False
+        Combo1.Visible = False
+    ElseIf Label3.Caption = "Copy" Then
+        TextCMD.Visible = Not True
+        Quality.Visible = False
+        Preset.Visible = False
+        Text3.Visible = False
+        Combo1.Visible = False
+    Else
+        TextCMD.Visible = Not True
+        Quality.Visible = Not False
+        Preset.Visible = Not False
+        Text3.Visible = Not False
+        Combo1.Visible = Not False
+    End If
 End Sub
 
 Private Sub Label3_Click()
     PopupMenu MenuEncoder
+    MouseLeave
 End Sub
 
 Private Sub Translate()
@@ -419,6 +488,7 @@ Private Sub Translate()
     MenuQuit.Caption = GetTranslation("Menu", "Quit")
     MenuOption.Caption = GetTranslation("Menu", "Option")
     MenuLanguage.Caption = GetTranslation("Menu", "Language")
+    MenuFFmpegPath.Caption = GetTranslation("Menu", "ffmpegPath")
 '************************Buttom*******************************************
     run.Caption = GetTranslation("Bottom", "run")
     
@@ -426,21 +496,22 @@ End Sub
 
 Private Sub Label4_Click()
     PopupMenu MenuFormat
+    MouseLeave
 End Sub
 
 Private Sub Menu_av1_amf_Click()
-    SelectEncoder = Menu_av1_amf.Caption
-    Label3.Caption = "VC" & SelectEncoder
+    SelectEncoder = "av1_amf"
+    Label3.Caption = SelectEncoder
 End Sub
 
 Private Sub Menu_av1_nvenc_Click()
-    SelectEncoder = Menu_av1_nvenc.Caption
-    Label3.Caption = "NV" & SelectEncoder
+    SelectEncoder = "av1_nvenc"
+    Label3.Caption = SelectEncoder
 End Sub
 
 Private Sub Menu_av1_qsv_Click()
-    SelectEncoder = Menu_av1_qsv.Caption
-    Label3.Caption = "Qsv" & SelectEncoder
+    SelectEncoder = "av1_qsv"
+    Label3.Caption = SelectEncoder
 End Sub
 
 Private Sub Menu_en_us_Click()
@@ -448,48 +519,50 @@ Private Sub Menu_en_us_Click()
     MsgBox "软件重启后生效", vbInformation, "需要重启"
 End Sub
 
+
+
 Private Sub Menu_h264_amf_Click()
-    SelectEncoder = Menu_h264_amf.Caption
-    Label3.Caption = "VC" & SelectEncoder
+    SelectEncoder = "h264_amf"
+    Label3.Caption = SelectEncoder
 End Sub
 
 Private Sub Menu_h264_nvenc_Click()
-    SelectEncoder = Menu_h264_nvenc.Caption
-    Label3.Caption = "NV" & SelectEncoder
+    SelectEncoder = "h264_nvenc"
+    Label3.Caption = SelectEncoder
 End Sub
 
 Private Sub Menu_h264_qsv_Click()
-    SelectEncoder = Menu_h264_qsv.Caption
-    Label3.Caption = "Qsv" & SelectEncoder
+    SelectEncoder = "h264_qsv"
+    Label3.Caption = SelectEncoder
 End Sub
 
 Private Sub Menu_hevc_amf_Click()
-    SelectEncoder = Menu_hevc_amf.Caption
-    Label3.Caption = "VC" & SelectEncoder
+    SelectEncoder = "hevc_amf"
+    Label3.Caption = SelectEncoder
 End Sub
 
 Private Sub Menu_hevc_nvenc_Click()
-    SelectEncoder = Menu_hevc_nvenc.Caption
-    Label3.Caption = "NV" & SelectEncoder
+    SelectEncoder = "hevc_nvenc"
+    Label3.Caption = SelectEncoder
 End Sub
 
 Private Sub Menu_hevc_qsv_Click()
-    SelectEncoder = Menu_hevc_qsv.Caption
-    Label3.Caption = "Qsv" & SelectEncoder
+    SelectEncoder = "hevc_qsv"
+    Label3.Caption = SelectEncoder
 End Sub
 
 Private Sub Menu_libaom_av1_Click()
-    SelectEncoder = Menu_libaom_av1.Caption
+    SelectEncoder = "libaom_av1"
     Label3.Caption = SelectEncoder
 End Sub
 
 Private Sub Menu_librav1e_Click()
-    SelectEncoder = Menu_librav1e.Caption
+    SelectEncoder = "librav1e"
     Label3.Caption = SelectEncoder
 End Sub
 
 Private Sub Menu_libsvtav1_Click()
-    SelectEncoder = Menu_libsvtav1.Caption
+    SelectEncoder = "libsvtav1"
     Label3.Caption = SelectEncoder
 End Sub
 
@@ -505,18 +578,18 @@ Private Sub Menu_libx265_Click()
 End Sub
 
 Private Sub Menu_mjpeg_qsv_Click()
-    SelectEncoder = Menu_mjpeg_qsv.Caption
-    Label3.Caption = "Qsv" & SelectEncoder
+    SelectEncoder = "mjpeg_qsv"
+    Label3.Caption = SelectEncoder
 End Sub
 
 Private Sub Menu_mpeg2_qsv_Click()
-    SelectEncoder = Menu_mpeg2_qsv.Caption
-    Label3.Caption = "Qsv" & SelectEncoder
+    SelectEncoder = "mpeg2_qsv"
+    Label3.Caption = SelectEncoder
 End Sub
 
 Private Sub Menu_vp9_qsv_Click()
-    SelectEncoder = Menu_vp9_qsv.Caption
-    Label3.Caption = "Qsv" & SelectEncoder
+    SelectEncoder = "vp9_qsv"
+    Label3.Caption = SelectEncoder
 End Sub
 
 Private Sub Menu_zh_cn_Click()
@@ -533,9 +606,17 @@ Private Sub MenuAbout_Click()
     frmAbout.Show
 End Sub
 
+Private Sub MenuCMDLine_Click()
+    Label3.Caption = "Command"
+End Sub
+
 Private Sub MenuCopy_Click()
-    SelectEncoder = MenuCopy.Caption
+    SelectEncoder = "Copy"
     Label3.Caption = SelectEncoder
+End Sub
+
+Private Sub MenuFFmpegPath_Click()
+    BasicOptions.Show
 End Sub
 
 Private Sub MenuInput_Click()
@@ -576,4 +657,41 @@ Private Sub run_Click()
     Exit Sub
 runErr:
     MsgBox "未能执行命令", vbCritical, "错误"
+End Sub
+Private Sub Label3_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    ' 高亮显示标签
+    Label3.FontBold = True
+    Label3.FontItalic = True
+End Sub
+Private Sub EncoderOptions_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    ' 高亮显示标签
+    EncoderOptions.FontBold = True
+    EncoderOptions.FontItalic = True
+End Sub
+Private Sub Label4_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    ' 高亮显示标签
+    Label4.FontBold = True
+    Label4.FontItalic = True
+End Sub
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    MouseLeave
+End Sub
+Private Sub Frame1_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    MouseLeave
+End Sub
+Private Sub MouseLeave()
+    ' 移除标签的高亮显示
+    Label3.FontBold = False
+    Label3.FontItalic = False
+    Label4.FontBold = False
+    Label4.FontItalic = False
+    EncoderOptions.FontBold = False
+    EncoderOptions.FontItalic = False
+End Sub
+
+Private Sub TextCMD_GotFocus()
+    If TextCMD.Text = "CommandLine" Then
+        TextCMD.SelStart = 0
+        TextCMD.SelLength = Len(TextCMD.Text)
+    End If
 End Sub
