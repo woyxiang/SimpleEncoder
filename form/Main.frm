@@ -616,7 +616,7 @@ Private Sub MenuCopy_Click()
 End Sub
 
 Private Sub MenuFFmpegPath_Click()
-    BasicOptions.Show
+    BasicOptions.Show vbModal
 End Sub
 
 Private Sub MenuInput_Click()

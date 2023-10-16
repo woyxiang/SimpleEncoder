@@ -1,7 +1,7 @@
 Attribute VB_Name = "ForMod1"
 'Public FFmpegPath$
 'Dim FFmpegExist As Integer
-Public SelectLanguage$
+Public SelectLanguage$, ConfigPath$
 Private Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As Any, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Long, ByVal lpFileName As String) As Long
 Private Declare Function WritePrivateProfileString Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As Any, ByVal lpString As Any, ByVal lpFileName As String) As Long
 
@@ -29,11 +29,12 @@ Public Function GetTranslation(strSection As String, strKey As String)
 End Function
 
 Sub Main()
-
+    ConfigPath = App.Path & "\Config\config.ini"
 '    MsgBox GetIniKey("Fore", "firststart", App.Path & "\Config\config.ini")
     SelectLanguage = GetIniKey("MainScreen", "language", App.Path & "\Config\config.ini")
 '    k = CBool(GetIniKey("Fore", "firststart", App.Path & "\Config\config.ini"))
     Mainform.Show
+
 End Sub
 Public Function FFmpegPath$()
 
@@ -56,7 +57,7 @@ Public Function FFmpegPath$()
             Exit For
         End If
     Next i
-    Path = FFmpegPath
+      FFmpegPath = Path
     
 '    If FFmpegPath <> "" Then
 '        'MsgBox "ffmpeg.exe位于以下目录：" & ffmpegPath
@@ -68,7 +69,6 @@ Public Function FFmpegPath$()
 
 End Function
 Public Function FFmpegExist() As Boolean
-    Call FFmpegExist
     If FFmpegPath <> "" Then
         FFmpegExist = True
     Else
