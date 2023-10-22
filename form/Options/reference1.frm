@@ -117,9 +117,8 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
-Dim ConfirmTip$, shouldCancel As Boolean
+Dim shouldCancel As Boolean
 Private Sub Translate()
-    ConfirmTip = GetTranslation("BasicOptions", "confirmTip")
     Check1.Caption = GetTranslation("BasicOptions", "envpath")
     Check2.Caption = GetTranslation("BasicOptions", "checkAtEach")
     Check3.Caption = GetTranslation("BasicOptions", "check")
@@ -130,43 +129,48 @@ End Sub
 
 Private Sub Check1_Click()
     If Check1.Value = 1 Then
-        WriteIniKey "Fore", "ffmpeg", "path", ConfigPath
+        Text1.Enabled = False
+        Command1.Enabled = False
+    Else
+        Text1.Enabled = True
+        Command1.Enabled = True
     End If
 End Sub
 
 Private Sub CMDApply_Click()
-
-    If Check3.Value = 1 Then
+    
+    If Check1.Value = 1 Then '环境变量选项
+        WriteIniKey "BasicOption", "ffmpeg", "path", ConfigPath
+    Else
+        WriteIniKey "BasicOption", "ffmpeg", Text1.Text, ConfigPath
+    End If
+    
+    If Check2.Value = 1 Then '每次启动检查
+        WriteIniKey "BasicOption", "checkFFmpeg", "yes", ConfigPath
+    Else
+        WriteIniKey "BasicOption", "checkFFmpeg", "no", ConfigPath
+    End If
+    
+    If Check3.Value = 1 Then '退出时检查
         If Check1.Value = 1 Then
             CheckApply
         ElseIf Not IsFFmpegPath(Text1.Text) Then
             MsgBox GetTranslation("BasicOptions", "queryPath"), vbQuestion
-            shouldCancel = False
-        Else
             shouldCancel = True
+        Else
+            shouldCancel = False
             Unload BasicOptions
         End If
     Else
-        shouldCancel = True
+        shouldCancel = False
         Unload BasicOptions
     End If
 End Sub
-Private Function IsFFmpegPath(addr As String) As Boolean
-    Dim reg As Object
-    Set reg = CreateObject("VBScript.RegExp")
-    
-    With reg
-        .Pattern = ".*ffmpeg\.exe"
-        .IgnoreCase = True
-        .Global = True
-        IsFFmpegPath = .Test(addr)
-    End With
 
-End Function
 
 Private Sub CheckApply()
-    If FFmpegExist Then
-        shouldCancel = True
+    If FFmpegExistInPath Then
+        shouldCancel = False
         Unload BasicOptions
     Else
         MsgBox GetTranslation("BasicOptions", "wrongPathVar"), vbCritical, GetTranslation("Title", "Err")
@@ -175,7 +179,7 @@ Private Sub CheckApply()
 End Sub
 
 Private Sub CMDCancel_Click()
-    shouldCancel = True
+    shouldCancel = False
     Unload BasicOptions
 End Sub
 
@@ -188,14 +192,22 @@ End Sub
 
 Private Sub Form_Load()
     Translate
-    Check1.ToolTipText = ConfirmTip
-    If GetIniKey("Fore", "ffmpeg", ConfigPath) = "path" Then Check1.Value = 1
+    Check1.ToolTipText = GetTranslation("BasicOptions", "confirmTip")
+    If GetIniKey("BasicOption", "ffmpeg", ConfigPath) = "path" Then
+        Check1.Value = 1
+        Text1.Enabled = False
+        Command1.Enabled = False
+    Else
+        Text1.Text = GetIniKey("BasicOption", "ffmpeg", ConfigPath)
+    End If
+    If GetIniKey("BasicOption", "checkFFmpeg", ConfigPath) = "no" Then Check1.Value = 0
+    
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     If UnloadMode = 0 Then
         If MsgBox(GetTranslation("BasicOptions", "querySave"), vbYesNo + vbQuestion) = vbYes Then
-           CMDApply_Click
+            CMDApply_Click
             
         Else
             CMDCancel_Click
@@ -204,9 +216,9 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         
     End If
     If shouldCancel Then
-        Cancel = 0
-    Else
         Cancel = 1
+    Else
+        Cancel = 0
     End If
     
 End Sub
