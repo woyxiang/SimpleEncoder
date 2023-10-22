@@ -1,14 +1,18 @@
 VERSION 5.00
 Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "COMDLG32.OCX"
 Begin VB.Form BasicOptions 
+   BorderStyle     =   3  'Fixed Dialog
    Caption         =   "BasicOptions"
    ClientHeight    =   4116
-   ClientLeft      =   108
-   ClientTop       =   456
+   ClientLeft      =   36
+   ClientTop       =   384
    ClientWidth     =   6648
    LinkTopic       =   "Form1"
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
    ScaleHeight     =   4116
    ScaleWidth      =   6648
+   ShowInTaskbar   =   0   'False
    StartUpPosition =   3  '´°¿ÚÈ±Ê¡
    Begin VB.CheckBox Check3 
       Caption         =   "Check3"
@@ -201,7 +205,7 @@ Private Sub Form_Load()
         Text1.Text = GetIniKey("BasicOption", "ffmpeg", ConfigPath)
     End If
     If GetIniKey("BasicOption", "checkFFmpeg", ConfigPath) = "no" Then Check1.Value = 0
-    
+    Me.Icon = LoadPicture("")
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)

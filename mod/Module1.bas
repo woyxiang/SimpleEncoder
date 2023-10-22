@@ -37,10 +37,11 @@ Public Function GetTranslation(strSection As String, strKey As String)
 End Function
 
 Sub Main()
-    
+    Dim fs As New FileSystemObject
     ConfigPath = App.path & "\Config\config.ini"
     SelectLanguage = GetIniKey("MainScreen", "language", App.path & "\Config\config.ini")
     '************************************************************************************************
+    If fs.FileExists(App.path & "\bin\ffmpeg.exe") Then WriteIniKey "BasicOption", "ffmpeg", App.path & "\bin\ffmpeg.exe", ConfigPath
     If GetIniKey("BasicOption", "checkFFmpeg", ConfigPath) = "yes" Then
         InformCheckFFmpegResault (True)
     Else

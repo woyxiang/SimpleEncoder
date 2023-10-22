@@ -55,6 +55,7 @@ Begin VB.Form frmAbout
       Y2              =   1687.452
    End
    Begin VB.Label lblDescription 
+      Caption         =   "小组成员：向睿，蒋兴权，牟智杰，苏正舵，范宏博 杨灿"
       ForeColor       =   &H00000000&
       Height          =   1170
       Left            =   1050
@@ -144,6 +145,7 @@ Private Sub Form_Load()
     Me.Caption = "关于 " & App.Title
     lblVersion.Caption = "版本 " & App.Major & "." & App.Minor & "." & App.Revision
     lblTitle.Caption = App.Title
+    Me.Icon = LoadPicture("")
 End Sub
 
 Public Sub StartSysInfo()
