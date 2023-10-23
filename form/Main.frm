@@ -355,6 +355,14 @@ Begin VB.Form Mainform
       TabIndex        =   16
       Top             =   1920
       Width           =   4212
+      Begin VB.TextBox Text4 
+         Height          =   264
+         Left            =   2400
+         TabIndex        =   18
+         Text            =   "Text4"
+         Top             =   360
+         Width           =   1452
+      End
       Begin VB.CheckBox Check1 
          Caption         =   "ReCheck1"
          Height          =   252
@@ -371,11 +379,19 @@ Begin VB.Form Mainform
          Top             =   840
          Width           =   1452
       End
-      Begin VB.TextBox Text4 
-         Height          =   264
+      Begin VB.Label Label13 
+         Caption         =   "Label13"
+         Height          =   252
          Left            =   2400
-         TabIndex        =   18
-         Text            =   "Text4"
+         TabIndex        =   39
+         Top             =   840
+         Width           =   1452
+      End
+      Begin VB.Label Label12 
+         Caption         =   "Label12"
+         Height          =   252
+         Left            =   2400
+         TabIndex        =   38
          Top             =   360
          Width           =   1452
       End
@@ -571,6 +587,17 @@ Begin VB.Form Mainform
       Begin VB.Menu MenuFFmpegPath 
          Caption         =   "FFmpegPath"
       End
+      Begin VB.Menu MenuBatchSetting 
+         Caption         =   "BatchSetting"
+         Begin VB.Menu MenuGrammarCheck 
+            Caption         =   "GrammarCheck"
+            Checked         =   -1  'True
+         End
+         Begin VB.Menu MenuSaveLog 
+            Caption         =   "SaveLog"
+            Checked         =   -1  'True
+         End
+      End
    End
    Begin VB.Menu MenuAbout 
       Caption         =   "About(&A)"
@@ -622,7 +649,19 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Enum GenerateCommandStringResault
+    wrongSizeNum = 0
+    NoFiles = 1
+    WrongBitrate = 2
+    cantResize = 3
+End Enum
 Dim SelectEncoder$, SelectFormat$, BitrateControlMode$, VideoSize$, AuEncode$, myPreset$, RateMode$, TerminalCancel As Boolean
+
+Private Declare Function MessageBeep Lib "user32" (ByVal wType As Long) As Long
+
+Public Sub PlayBeep()
+    Call MessageBeep(0)
+End Sub
 
 Private Sub Check1_Click()
     If Check1.Value = 1 Then
@@ -694,69 +733,8 @@ Private Sub CommandAbout_Click()
 End Sub
 
 Private Sub CommandCode_Click()
-    Dim cmdstr$, SourceFile$, TargetFile$, Quot$, Spac$, CMDOPEN$, crf$, Bitrate$, VideoWidth$, VideoHeight$
-    Dim cmdstr1, cmdstr2, cmdstr3, cmdstr4, cmdstr5, cmdstr6
-    Dim ffmpeg$
-    If GetIniKey("BasicOption", "ffmpeg", ConfigPath) = "path" Then
-        ffmpeg = "ffmpeg"
-    Else
-        ffmpeg = GetIniKey("BasicOption", "ffmpeg", ConfigPath)
-    End If
-    
-    Quot = Chr(34): Spac = " "                          '双引号，空格
-    SourceFile = Quot & Text1.Text & Quot
-    TargetFile = Quot & Text2.Text & Quot
-    '开头
-    cmdstr1 = ffmpeg & " -y "
-    '输入文件
-    cmdstr2 = " -i " & SourceFile
-    '编码器、preset、码率
-    Bitrate = Text6.Text
-    Select Case Combo1.ListIndex
-        Case 0
-            myPreset = "veryfast"
-        Case 1
-            myPreset = "medium"
-        Case 2
-            myPreset = "veryslow"
-    End Select
-    If RateMode = "crf" And SelectEncoder <> "copy" Then
-        cmdstr3 = " -c:v " & SelectEncoder & " -preset " & myPreset & " -crf " & crf
-    ElseIf RateMode = "VBR" And SelectEncoder <> "copy" Then
-        cmdstr3 = " -c:v " & SelectEncoder & " -b:v " & Bitrate
-    ElseIf SelectEncoder = "copy" Then
-        cmdstr3 = " -c:v " & SelectEncoder
-    End If
-
-    '分辨率
-    If Text4.Text = "Auto" Then
-        VideoWidth = "-2"
-    Else
-        VideoWidth = Text4.Text
-    End If
-    If Text5.Text = "Auto" Then
-        VideoHeight = "-2"
-    Else
-        VideoHeight = Text5.Text
-    End If
-    If Check1.Value = 0 And SelectEncoder <> "copy" Then
-        cmdstr4 = " -vf ""scale=trunc(iw/2)*2:trunc(ih/2)*2"" "
-    ElseIf Check1.Value = 1 And SelectEncoder <> "copy" Then
-        cmdstr4 = " -vf ""scale=" & VideoWidth & ":" & VideoHeight
-    ElseIf SelectEncoder <> "copy" Then
-        cmdstr4 = ""
-    End If
-    '音频编码
-    If Combo2.ListIndex = 0 Then
-        cmdstr5 = " -c:a copy "
-    ElseIf Combo2.ListIndex = 1 Then
-        cmdstr5 = " -c:a aac " & " -b:a " & Text7.Text
-    End If
-    '元数据映射
-    cmdstr6 = " -map_chapters 0 -map_metadata 0 "
-    '输出文件
-    cmdstr6 = " -f " & SelectFormat & Spac & TargetFile
-    cmdstr = cmdstr1 & cmdstr2 & cmdstr3 & cmdstr4 & cmdstr5 & cmdstr6
+    Dim cmdstr$
+    cmdstr = GenerateCommandString(False, False, False)
     MsgBox cmdstr
 End Sub
 
@@ -841,6 +819,8 @@ Private Sub EncoderOptions_Click()
     
 End Sub
 
+
+
 Private Sub Form_Load()
     Translate
     SelectEncoder = "libx265"
@@ -858,10 +838,37 @@ Private Sub Form_Load()
     Combo2_Click
     Commandwindow.Caption = Commandwindow.Caption & "×"
     
+    If GetIniKey("Menu", "grammarCheck", ConfigPath) = "no" Then
+        MenuGrammarCheck.Checked = False
+    Else
+        WriteIniKey "Menu", "grammarCheck", "yes", ConfigPath
+        MenuGrammarCheck.Checked = True
+    End If
+    
+    If GetIniKey("Menu", "SaveLog", ConfigPath) = "no" Then
+        MenuSaveLog.Checked = False
+    Else
+        WriteIniKey "Menu", "SaveLog", "yes", ConfigPath
+        MenuSaveLog.Checked = True
+    End If
 End Sub
 
 Private Sub Frame2_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     MouseLeave
+End Sub
+
+Private Sub Label12_Click()
+    If Text4.Enabled = False Then
+        PlayBeep
+        Check1.SetFocus
+    End If
+End Sub
+
+Private Sub Label13_Click()
+    If Text4.Enabled = False Then
+        PlayBeep
+        Check1.SetFocus
+    End If
 End Sub
 
 Private Sub Label3_Change()
@@ -955,6 +962,9 @@ Private Sub Translate()
     MenuOption.Caption = GetTranslation("Menu", "Option")
     MenuLanguage.Caption = GetTranslation("Menu", "Language")
     MenuFFmpegPath.Caption = GetTranslation("Menu", "ffmpegPath")
+    MenuGrammarCheck.Caption = GetTranslation("Menu", "grammarCheck")
+    MenuSaveLog.Caption = GetTranslation("Menu", "saveLog")
+    MenuBatchSetting.Caption = GetTranslation("Menu", "batchSetting")
 '************************Buttom*******************************************
     run.Caption = GetTranslation("Bottom", "run")
     CommandCode.Caption = GetTranslation("Bottom", "code")
@@ -1183,68 +1193,23 @@ Private Sub MenuCopy_Click()
 End Sub
 
 Private Sub MenuExportBatch_Click()
-    Dim cmdstr$, SourceFile$, TargetFile$, Quot$, Spac$, CMDOPEN$, crf$, Bitrate$, VideoWidth$, VideoHeight$
-    Dim cmdstr1, cmdstr2, cmdstr3, cmdstr4, cmdstr5, cmdstr6
-        
-       
-    
-    Quot = Chr(34): Spac = " "                          '双引号，空格
-    SourceFile = Quot & Text1.Text & Quot
-    TargetFile = Quot & Text2.Text & Quot
-    '开头
-    cmdstr1 = "ffmpeg -y "
-    '输入文件
-    cmdstr2 = " -i " & SourceFile
-    '编码器、preset、码率
-    Bitrate = Text6.Text
-    Select Case Combo1.ListIndex
-        Case 0
-            myPreset = "veryfast"
-        Case 1
-            myPreset = "medium"
-        Case 2
-            myPreset = "veryslow"
-    End Select
-    If RateMode = "crf" And SelectEncoder <> "copy" Then
-        cmdstr3 = " -c:v " & SelectEncoder & " -preset " & myPreset & " -crf " & crf
-    ElseIf RateMode = "VBR" And SelectEncoder <> "copy" Then
-        cmdstr3 = " -c:v " & SelectEncoder & " -b:v " & Bitrate
-    ElseIf SelectEncoder = "copy" Then
-        cmdstr3 = " -c:v " & SelectEncoder
-    End If
-
-    '分辨率
-    If Text4.Text = "Auto" Then
-        VideoWidth = "-2"
+    Dim cmdstr As Variant, Check As Boolean, Log As Boolean
+    If MenuSaveLog.Checked = True Then
+        Log = True
     Else
-        VideoWidth = Text4.Text
+        Log = False
     End If
-    If Text5.Text = "Auto" Then
-        VideoHeight = "-2"
+    
+    If MenuGrammarCheck.Checked = True Then
+        Check = True
     Else
-        VideoHeight = Text5.Text
+        Check = False
     End If
-    If Check1.Value = 0 And SelectEncoder <> "copy" Then
-        cmdstr4 = " -vf ""scale=trunc(iw/2)*2:trunc(ih/2)*2"" "
-    ElseIf Check1.Value = 1 And SelectEncoder <> "copy" Then
-        cmdstr4 = " -vf ""scale=" & VideoWidth & ":" & VideoHeight
-    ElseIf SelectEncoder <> "copy" Then
-        cmdstr4 = ""
+    
+    cmdstr = GenerateCommandString(False, Check, Log)
+    If TypeName(cmdstr) = "Long" Then
+        MsgBox GetTranslation("MsgBox", "errOnBatchExport"), vbCritical: Exit Sub
     End If
-    '音频编码
-    If Combo2.ListIndex = 0 Then
-        cmdstr5 = " -c:a copy "
-    ElseIf Combo2.ListIndex = 1 Then
-        cmdstr5 = " -c:a aac " & " -b:a " & Text7.Text
-    End If
-    '元数据映射
-    cmdstr6 = " -map_chapters 0 -map_metadata 0 "
-    '输出文件
-    cmdstr6 = " -f " & SelectFormat & Spac & TargetFile
-    cmdstr = cmdstr1 & cmdstr2 & cmdstr3 & cmdstr4 & cmdstr5 & cmdstr6
-    
-    
-    
     Dim FileName As String
     CommonDialog2.Filter = "*.bat"
     CommonDialog2.ShowSave
@@ -1262,6 +1227,16 @@ End Sub
 
 Private Sub MenuFFmpegPath_Click()
     BasicOptions.Show vbModal
+End Sub
+
+Private Sub MenuGrammarCheck_Click()
+    If MenuGrammarCheck.Checked = False Then
+        MenuGrammarCheck.Checked = True
+        WriteIniKey "Menu", "grammarCheck", "yes", ConfigPath
+    Else
+        MenuGrammarCheck.Checked = False
+        WriteIniKey "Menu", "grammarCheck", "no", ConfigPath
+    End If
 End Sub
 
 Private Sub MenuInput_Click()
@@ -1291,116 +1266,31 @@ Private Sub Options_Click()
 
 End Sub
 
+Private Sub MenuSaveLog_Click()
+    If MenuSaveLog.Checked = False Then
+        MenuSaveLog.Checked = True
+        WriteIniKey "Menu", "SaveLog", "yes", ConfigPath
+    Else
+        MenuGrammarCheck.Checked = False
+        WriteIniKey "Menu", "SaveLog", "no", ConfigPath
+    End If
+
+End Sub
+
 Private Sub run_Click()
-    On Error GoTo runErr
-    Dim SourceFile$, TargetFile$, Quot$, Spac$, CMDOPEN$, crf$, Bitrate$, VideoWidth$, VideoHeight$
-    Dim cmdstr1, cmdstr2, cmdstr3, cmdstr4, cmdstr5, cmdstr6, cmdstr7, CMDlog
-    Dim cmdstr$
-    Dim ffmpeg$, logPath$
-    logPath = Replace(Replace(App.path & "\logs", "\", "\\"), ":", "\:")
-    CMDlog = "set FFREPORT=file=" & logPath & "\\%p-%t.log" & ":level=32 && "
-    If GetIniKey("BasicOption", "ffmpeg", ConfigPath) = "path" Then
-        ffmpeg = "ffmpeg"
-    Else
-        ffmpeg = """" & GetIniKey("BasicOption", "ffmpeg", ConfigPath) & """"
+'    On Error GoTo runErr
+    Dim cmdstr As Variant
+    cmdstr = GenerateCommandString(True, True, True)
+    If cmdstr = NoFiles Then
+        MsgBox GetTranslation("MsgBox", "noFileSelected"), vbCritical: Exit Sub
+    ElseIf cmdstr = WrongBitrate Then
+        MsgBox GetTranslation("MsgBox", "checkBitRate"), vbCritical: Exit Sub
+    ElseIf cmdstr = cantResize Then
+        MsgBox GetTranslation("MsgBox", "cantResize"), vbCritical: Exit Sub
+    ElseIf cmdstr = wrongSizeNum Then
+        MsgBox GetTranslation("MsgBox", "wrongSizeNum"), vbCritical: Exit Sub
     End If
-    Dim reg As Object
-    Set reg = CreateObject("VBScript.RegExp")
-    With reg
-        .Pattern = "^\d+(k|M)$" '匹配码率单位
-        .IgnoreCase = False
-        .Global = True
-    End With
-    
-    '运行前检查
-    If SizeNumberTest = False Then MsgBox GetTranslation("MsgBox", "wrongSizeNum"), vbCritical: Exit Sub
-    If Text1.Text = "" Or Text2.Text = "" Then GoTo runErr
-    If Text6.Visible = True Then
-        If reg.Test(Text6.Text) = False Then MsgBox GetTranslation("MsgBox", "checkBitRate"), vbCritical: Exit Sub
-    End If
-    If Text7.Visible = True Then
-        If reg.Test(Text7.Text) = False Then MsgBox GetTranslation("MsgBox", "checkBitRate"), vbCritical: Exit Sub
-    End If
-    If Text3.Text = "" Then
-        crf = "23"
-    Else
-        crf = Text3.Text
-    End If
-    If SelectEncoder = "copy" And Check1.Value = 1 Then MsgBox GetTranslation("MsgBox", "cantResize"), vbCritical: Exit Sub
-    
-    
-    Quot = Chr(34): Spac = " "                          '双引号，空格
-    SourceFile = Quot & Text1.Text & Quot
-    TargetFile = Quot & Text2.Text & Quot
-    '开头
-    If TerminalCancel Then
-        cmdstr1 = "CMD /K  " & CMDlog & ffmpeg & " -y "
-    Else
-        cmdstr1 = "CMD /C  " & CMDlog & ffmpeg & " -y "
-    End If
-    '输入文件
-    cmdstr2 = " -i " & SourceFile
-    '编码器、preset、码率
-    Bitrate = Text6.Text
-    Select Case Combo1.ListIndex
-        Case 0
-            myPreset = "veryfast"
-        Case 1
-            myPreset = "medium"
-        Case 2
-            myPreset = "veryslow"
-    End Select
-    If RateMode = "crf" And SelectEncoder <> "copy" Then
-        cmdstr3 = " -c:v " & SelectEncoder & " -preset " & myPreset & " -crf " & crf
-    ElseIf RateMode = "VBR" And SelectEncoder <> "copy" Then
-        cmdstr3 = " -c:v " & SelectEncoder & " -b:v " & Bitrate
-    ElseIf SelectEncoder = "copy" Then
-        cmdstr3 = " -c:v " & SelectEncoder
-    End If
-
-    '分辨率
-    If Text4.Text = "Auto" Then
-        VideoWidth = "-2"
-    Else
-        VideoWidth = Text4.Text
-    End If
-    If Text5.Text = "Auto" Then
-        VideoHeight = "-2"
-    Else
-        VideoHeight = Text5.Text
-    End If
-    If Check1.Value = 0 And SelectEncoder <> "copy" Then
-        cmdstr4 = " -vf ""scale=trunc(iw/2)*2:trunc(ih/2)*2"" "
-    ElseIf Check1.Value = 1 And SelectEncoder <> "copy" Then
-        cmdstr4 = " -vf ""scale=" & VideoWidth & ":" & VideoHeight & """"
-    ElseIf SelectEncoder <> "copy" Then
-        cmdstr4 = ""
-    End If
-    '音频编码
-    If Combo2.ListIndex = 0 Then
-        cmdstr5 = " -c:a copy "
-    ElseIf Combo2.ListIndex = 1 Then
-        cmdstr5 = " -c:a aac " & " -b:a " & Text7.Text
-    End If
-    '元数据映射
-    cmdstr6 = " -map_chapters 0 -map_metadata 0 "
-    '输出文件
-    If SelectEncoder = "copy" Then
-        cmdstr6 = Spac & TargetFile
-    Else
-        cmdstr6 = " -f " & SelectFormat & Spac & TargetFile
-    End If
-        '日志部分
-    cmdstr7 = " -report " & Quot & App.path & "\logs\" & Format(Date, "yyyy-MM-dd") & "_" & Format(Time, "hh-mm-ss") & ".log" & Quot
-    
-    cmdstr = cmdstr1 & cmdstr2 & cmdstr3 & cmdstr4 & cmdstr5 & cmdstr6
-
-    
-   
-    
-
-    Shell cmdstr, vbNormalFocus
-'    MsgBox cmdstr
+    MsgBox cmdstr
     Exit Sub
 runErr:
     
@@ -1469,7 +1359,7 @@ Private Sub TextCMD_GotFocus()
     End If
 End Sub
 
-Private Function GenerateCommandString() As String
+Private Function GenerateCommandString(CMD As Boolean, Check As Boolean, logs As Boolean) As Variant
     Dim SourceFile$, TargetFile$, Quot$, Spac$, CMDOPEN$, crf$, Bitrate$, VideoWidth$, VideoHeight$
     Dim cmdstr1, cmdstr2, cmdstr3, cmdstr4, cmdstr5, cmdstr6, cmdstr7, CMDlog
     Dim cmdstr$
@@ -1489,31 +1379,52 @@ Private Function GenerateCommandString() As String
         .Global = True
     End With
     
-    '运行前检查
-    If SizeNumberTest = False Then MsgBox GetTranslation("MsgBox", "wrongSizeNum"), vbCritical: Exit Function
-'    If Text1.Text = "" Or Text2.Text = "" Then GoTo runErr
-    If Text6.Visible = True Then
-        If reg.Test(Text6.Text) = False Then MsgBox GetTranslation("MsgBox", "checkBitRate"), vbCritical: Exit Function
+    If Check = True Then
+        '运行前检查
+        If SizeNumberTest = False Then GenerateCommandString = wrongSizeNum: Exit Function 'MsgBox GetTranslation("MsgBox", "wrongSizeNum"), vbCritical: Exit Function
+        If Text1.Text = "" Or Text2.Text = "" Then GenerateCommandString = NoFiles: Exit Function
+        If Text6.Visible = True Then
+            If reg.Test(Text6.Text) = False Then GenerateCommandString = WrongBitrate: Exit Function 'MsgBox GetTranslation("MsgBox", "checkBitRate"), vbCritical: Exit Function
+        End If
+        If Text7.Visible = True Then
+            If reg.Test(Text7.Text) = False Then GenerateCommandString = WrongBitrate: Exit Function 'MsgBox GetTranslation("MsgBox", "checkBitRate"), vbCritical: Exit Function
+        End If
+        If SelectEncoder = "copy" And Check1.Value = 1 Then GenerateCommandString = cantResize 'MsgBox GetTranslation("MsgBox", "cantResize"), vbCritical: Exit Function
+
+        '检查结束
     End If
-    If Text7.Visible = True Then
-        If reg.Test(Text7.Text) = False Then MsgBox GetTranslation("MsgBox", "checkBitRate"), vbCritical: Exit Function
-    End If
+    
     If Text3.Text = "" Then
         crf = "23"
     Else
         crf = Text3.Text
     End If
-    If SelectEncoder = "copy" And Check1.Value = 1 Then MsgBox GetTranslation("MsgBox", "cantResize"), vbCritical: Exit Function
     
     
     Quot = Chr(34): Spac = " "                          '双引号，空格
     SourceFile = Quot & Text1.Text & Quot
     TargetFile = Quot & Text2.Text & Quot
     '开头
-    If TerminalCancel Then
-        cmdstr1 = "CMD /K  " & CMDlog & ffmpeg & " -y "
-    Else
-        cmdstr1 = "CMD /C  " & CMDlog & ffmpeg & " -y "
+    If CMD = True Then
+        If logs = True Then
+            If TerminalCancel Then
+                cmdstr1 = "CMD /K  " & CMDlog & ffmpeg & " -y "
+            Else
+                cmdstr1 = "CMD /C  " & CMDlog & ffmpeg & " -y "
+            End If
+        Else
+            If TerminalCancel Then
+                cmdstr1 = "CMD /K  " & ffmpeg & " -y "
+            Else
+                cmdstr1 = "CMD /C  " & ffmpeg & " -y "
+            End If
+        End If
+    ElseIf CMD = False Then
+        If logs = True Then
+            cmdstr1 = CMDlog & ffmpeg & " -y "
+        Else
+            cmdstr1 = ffmpeg & " -y "
+        End If
     End If
     '输入文件
     cmdstr2 = " -i " & SourceFile
@@ -1563,11 +1474,11 @@ Private Function GenerateCommandString() As String
     cmdstr6 = " -map_chapters 0 -map_metadata 0 "
     '输出文件
     If SelectEncoder = "copy" Then
-        cmdstr6 = Spac & TargetFile
+        cmdstr6 = Spac & " -threads 0 " & TargetFile
     Else
-        cmdstr6 = " -f " & SelectFormat & Spac & TargetFile
+        cmdstr6 = " -f " & SelectFormat & Spac & " -threads 0 " & TargetFile
     End If
-        '日志部分
+        '日志部分(暂废)
     cmdstr7 = " -report " & Quot & App.path & "\logs\" & Format(Date, "yyyy-MM-dd") & "_" & Format(Time, "hh-mm-ss") & ".log" & Quot
     
     cmdstr = cmdstr1 & cmdstr2 & cmdstr3 & cmdstr4 & cmdstr5 & cmdstr6
@@ -1578,6 +1489,7 @@ Private Function GenerateCommandString() As String
 
 '    Shell cmdstr, vbNormalFocus
 '    MsgBox cmdstr
-    Exit Function
+
 
 End Function
+
