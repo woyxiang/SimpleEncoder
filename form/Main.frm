@@ -1290,7 +1290,8 @@ Private Sub run_Click()
     ElseIf cmdstr = wrongSizeNum Then
         MsgBox GetTranslation("MsgBox", "wrongSizeNum"), vbCritical: Exit Sub
     End If
-    MsgBox cmdstr
+'    MsgBox cmdstr
+    Shell cmdstr, vbNormalFocus
     Exit Sub
 runErr:
     
@@ -1337,7 +1338,7 @@ Private Function SizeNumberTest() As Boolean
         With regEx
             .Global = True
             .Pattern = "^(10000|[1-9][0-9]{0,3}|Auto)$"
-            .IgnoreCase = True
+            .IgnoreCase = False
             If .Test(Text4.Text) = False Or .Test(Text5.Text) = False Then
 '                MsgBox GetTranslation("MsgBox", "wrongSizeNum"), vbCritical
                 SizeNumberTest = False

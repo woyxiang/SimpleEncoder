@@ -90,6 +90,7 @@ Begin VB.Form frmAbout
       Width           =   3885
    End
    Begin VB.Label lblDisclaimer 
+      Caption         =   "×é³¤QQ:1065709620"
       ForeColor       =   &H00000000&
       Height          =   825
       Left            =   255
