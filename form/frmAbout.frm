@@ -55,7 +55,6 @@ Begin VB.Form frmAbout
       Y2              =   1687.452
    End
    Begin VB.Label lblDescription 
-      Caption         =   "小组成员：向睿，蒋兴权，牟智杰，苏正舵，范宏博 杨灿"
       ForeColor       =   &H00000000&
       Height          =   1170
       Left            =   1050
@@ -90,7 +89,6 @@ Begin VB.Form frmAbout
       Width           =   3885
    End
    Begin VB.Label lblDisclaimer 
-      Caption         =   "组长QQ:1065709620"
       ForeColor       =   &H00000000&
       Height          =   825
       Left            =   255
@@ -233,3 +231,6 @@ GetKeyError:      ' 错误发生后将其清除...
     rc = RegCloseKey(hKey)                                  ' 关闭注册表关键字
 End Function
 
+Private Sub lblDescription_Click()
+
+End Sub
