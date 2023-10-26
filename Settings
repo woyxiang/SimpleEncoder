@@ -1,0 +1,93 @@
+{
+	"project.references": [
+		{
+			"id": "{F50B82D0-DCAB-43FE-9631-11959D4A4728}",
+			"name": "WinNativeForms",
+			"versionMajor": 0,
+			"versionMinor": 0,
+			"lcid": 0,
+			"path32": "",
+			"path64": ""
+		},
+		{
+			"id": "{00020430-0000-0000-C000-000000000046}",
+			"name": "OLE Automation",
+			"versionMajor": 2,
+			"versionMinor": 0,
+			"lcid": 0,
+			"path32": "C:\\Windows\\SysWOW64\\stdole2.tlb",
+			"path64": "C:\\Windows\\SysWOW64\\stdole2.tlb"
+		},
+		{
+			"id": "{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}",
+			"name": "ieframe.dll",
+			"versionMajor": 1,
+			"versionMinor": 1,
+			"lcid": 0,
+			"path32": "ieframe.dll",
+			"path64": "ieframe.dll",
+			"overrideSymbol": "SHDocVwCtl"
+		},
+		{
+			"id": "{3F4DACA7-160D-11D2-A8E9-00104B365C9F}",
+			"name": "Microsoft VBScript Regular Expressions 5.5",
+			"versionMajor": 5,
+			"versionMinor": 5,
+			"lcid": 0,
+			"path32": "C:\\Windows\\SysWOW64\\vbscript.dll\\3",
+			"path64": "C:\\Windows\\SysWOW64\\vbscript.dll\\3"
+		},
+		{
+			"id": "{420B2830-E718-11CF-893D-00A0C9054228}",
+			"name": "Microsoft Scripting Runtime",
+			"versionMajor": 1,
+			"versionMinor": 0,
+			"lcid": 0,
+			"path32": "C:\\Windows\\SysWOW64\\scrrun.dll",
+			"path64": "C:\\Windows\\SysWOW64\\scrrun.dll"
+		},
+		{
+			"id": "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}",
+			"name": "COMDLG32.OCX",
+			"versionMajor": 1,
+			"versionMinor": 2,
+			"lcid": 0,
+			"path32": "COMDLG32.OCX",
+			"path64": "COMDLG32.OCX"
+		},
+		{
+			"id": "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}",
+			"name": "MSCOMCTL.OCX",
+			"versionMajor": 2,
+			"versionMinor": 0,
+			"lcid": 0,
+			"path32": "MSCOMCTL.OCX",
+			"path64": "MSCOMCTL.OCX"
+		},
+		{
+			"id": "{D63CB78D-9F5B-42FE-B94C-A545F2B2BFC3}"
+		}
+	],
+	"project.versionMajor": 0,
+	"project.versionMinor": 1,
+	"project.versionRevision": 0,
+	"project.name": "SimpleEncoder",
+	"project.description": "",
+	"project.appTitle": "SimpleEncoder",
+	"project.appHelpFile": "",
+	"project.id": "{8E573CB9-BDB5-468A-8E38-417730067BC9}",
+	"configuration.inherits": "Defaults",
+	"project.buildType": "Standard EXE",
+	"debugger.runtimeCommandLineArguments": "",
+	"project.startupObject": "Sub Main",
+	"project.buildPath": "${SourcePath}\\Build\\${ProjectName}_${Architecture}.${FileExtension}",
+	"runtime.useUnicodeStandardLibrary": true,
+	"project.optionExplicit": true,
+	"project.autoPrettify": true,
+	"project.warnings": {
+		"ignored": [],
+		"errors": []
+	},
+	"project.settingsVersion": 1,
+	"project.forceDpiAwarenessAtStartup": "SYSTEM_DPI_AWARE"
+}

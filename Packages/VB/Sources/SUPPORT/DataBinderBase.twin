@@ -1,0 +1,140 @@
+Class DataFieldBinderBase
+	Implements DataSourceListener
+
+    Private IgnoreUpdates As Boolean = False
+    Private BoundField As Object    ' e.g. DAO.Field
+    Private InternalDataControl As Data
+    Private IsDataBinderInitialized As Boolean = False
+    Private InternalDataField As String
+    Private InternalDataSource As DataSource
+
+    [ Unimplemented ]
+        Public DataFormat As StdDataFormat
+    [ Unimplemented ]
+        Public DataMember As String
+        
+    [ Serialize (True, "DataField") ]
+        Public DataFieldINIT As String
+    [ Serialize (True, "DataSource") ]          ' Any string value is allowed, gets resolved at runtime to a Form.Controls(DataSourceName)
+        Public DataSourceINIT As String
+    '[ Serialize (False) ]
+    '[ Unimplemented ]
+    '    Public DataSource As DataSource         ' See DataSourceINIT
+        
+    [ Serialize (False) ]
+        Public DataChanged As Boolean
+        
+    Event GetParent(out As Control)
+    Event SetLiveValue(fieldValue As Variant)
+    Event GetLiveValue(out As Variant)
+
+    Private Sub DataSourceListener_dataMemberChanged(ByVal bstrDM As String) Implements DataSourceListener.dataMemberChanged
+        Stop
+    End Sub
+    
+    Private Sub DataSourceListener_dataMemberAdded(ByVal bstrDM As String) Implements DataSourceListener.dataMemberAdded
+        Stop
+    End Sub
+    
+    Private Sub DataSourceListener_dataMemberRemoved(ByVal bstrDM As String) Implements DataSourceListener.dataMemberRemoved
+        Stop
+    End Sub
+    
+    Public Sub HandlesDataChanged() _
+    	    Handles DataChanged.OnPropertyLet
+
+        If DataChanged = True Then
+            If InternalDataControl IsNot Nothing Then
+            	InternalDataControl.RecordsetIsDirty = True
+            End If
+        End If
+    End Sub
+    
+    [ Serialize (False) ]
+    Public Property Get DataField() As String
+    	Return InternalDataField
+    End Property
+    
+    [ Serialize (False) ]
+    Public Property Let DataField(Value As String)
+        If Me.InternalDataControl IsNot Nothing Then
+            Me.InternalDataControl.RebindControl(Me, Value)
+        End If
+    	InternalDataField = Value
+    End Property
+    
+    [ Serialize (False) ]
+    Public Property Get DataSource() As DataSource
+    	Return InternalDataSource
+    End Property
+    
+    [ Serialize (False) ]
+    Public Property Set DataSource(Value As DataSource)
+        If Me.InternalDataSource IsNot Nothing Then
+        	Me.InternalDataSource.removeDataSourceListener(Me)
+        End If
+    	Set InternalDataSource = Value
+        Set Me.InternalDataControl = InternalDataSource
+        Set Me.BoundField = Nothing
+        If Me.InternalDataSource IsNot Nothing Then
+            Me.InternalDataSource.addDataSourceListener(Me)
+            If Len(Me.DataField) > 0 Then
+                Me.InternalDataControl.RebindControl(Me, Me.DataField)
+            End If
+        End If
+    End Property
+
+    Public Sub SetupBindings()
+        InternalDataField = DataFieldINIT
+        If Len(Me.DataSourceINIT) > 0 Then
+            Dim Parent As Control
+            RaiseEvent GetParent(Parent)
+
+            Set Me.InternalDataControl = Parent.Controls(Me.DataSourceINIT)
+            Set Me.InternalDataSource = Me.InternalDataControl
+            Me.InternalDataSource.addDataSourceListener(Me)
+        End If
+        
+        IsDataBinderInitialized = True
+    End Sub
+    
+    Public Sub OnBindComplete(BoundField As Object)
+        Set Me.BoundField = BoundField
+    End Sub
+    
+    Public Sub ClearSource()
+    	IgnoreUpdates = True
+            RaiseEvent SetLiveValue(Null)
+        IgnoreUpdates = False
+        DataChanged = False
+    End Sub
+    
+    Public Sub SyncToSource()
+        If BoundField Is Nothing Then Exit Sub
+    	IgnoreUpdates = True
+            RaiseEvent SetLiveValue(BoundField.Value)
+        IgnoreUpdates = False
+        DataChanged = False
+    End Sub
+    
+    Public Sub SaveChanges()
+    	If DataChanged = True Then
+            Dim currentValue As Variant
+        	RaiseEvent GetLiveValue(currentValue)
+            BoundField.Value = currentValue
+            DataChanged = False
+    	End If
+    End Sub
+    
+    Public Sub OnDataChanged()
+        If (IgnoreUpdates = False) And (IsDataBinderInitialized = True) Then
+            If DataChanged = False Then
+                ' Stop
+                DataChanged = True
+                If InternalDataControl IsNot Nothing Then
+                    InternalDataControl.RecordsetIsDirty = True
+                End If
+            End If
+        End If
+    End Sub
+End Class

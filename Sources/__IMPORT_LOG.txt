@@ -1,0 +1,24 @@
+
+Import from Visual Basic VBP file 'E:\Project\Programing\VB\SimpleEncoder\SimpleEncoder.vbp'...
+   successfully set project.buildType to 'Standard EXE' at line #1
+   successfully added project.reference 'OLE Automation' at line #2
+   successfully added project.reference [COMPONENT] 'ieframe.dll' at line #3
+   successfully added project.reference 'Microsoft VBScript Regular Expressions 5.5' at line #4
+   successfully added project.reference 'Microsoft Scripting Runtime' at line #5
+   successfully added project.reference [COMPONENT] 'COMDLG32.OCX' at line #6
+   successfully added project.reference [COMPONENT] 'MSCOMCTL.OCX' at line #7
+   successfully imported MODULE 'mod\Module1.bas' at line #9
+   successfully set project.startupObject to 'Sub Main' at line #13
+   successfully set project.appHelpFile to '' at line #14
+   successfully set project.appTitle to 'SimpleEncoder' at line #15
+   successfully imported Command Line Arguments '' at line #18
+   successfully set project.name to 'SimpleEncoder' at line #19
+   successfully set project.versionMajor to '0' at line #22
+   successfully set project.versionMinor to '1' at line #23
+   successfully set project.versionRevision to '0' at line #24
+   successfully imported FORM 'form\Options\reference1.frm' at line #11
+   successfully imported FORM 'form\frmAbout.frm' at line #10
+   successfully imported FORM 'form\Main.frm' at line #8
+IMPORT FINISHED WITH 0 ERRORS/WARNINGS
+
+(you can delete this log file)
